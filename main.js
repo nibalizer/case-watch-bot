@@ -1,8 +1,11 @@
+require('dotenv').config()
 const cheerio = require('cheerio')
 const axios = require('axios')
 const express = require('express')
 const app = express()
 const port = 3000
+const url = process.env.SITUATION_URL 
+
 
 var result = {}
 
@@ -13,7 +16,7 @@ app.get('/cases/mn', (req, res) => res.send(result))
 
 //update MN cases data
 setInterval(function(){
-  axios.get("https://www.health.state.mn.us/diseases/coronavirus/situation.html")
+  axios.get(url)
     .then(function (response) {
       const $ = cheerio.load(response.data.toString());
 
