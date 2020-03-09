@@ -1,5 +1,15 @@
 {
+  "name": "case-watch-bot",
+  "version": "1.0.0",
+  "description": "Watch MN Dept of Health website for coronavirus cases",
+  "main": "parse.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Spencer Krum",
+  "license": "Apache-2.0",
   "dependencies": {
+    "axios": "^0.19.2",
     "cheerio": "^1.0.0-rc.3"
   }
 }
