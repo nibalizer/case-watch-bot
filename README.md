@@ -13,3 +13,8 @@ vim .env
 npm install 
 npm start
 ```
+
+
+## bot
+
+A bot exists which can respond to questions, see `discord_bot.js`
