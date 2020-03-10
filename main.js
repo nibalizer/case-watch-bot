@@ -22,11 +22,97 @@ if (typeof process.env.SITUATION_URL == 'undefined') {
   process.exit(1)
 }
 
+var state = {}
 
-var result = {
+var managers = {
     "ca": {},
-    "fed": {},
-    "mn": {},
+    "fed": {
+      config: {
+        url: "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html",
+      },
+      updater: function(config) {
+        axios.get(config.url)
+          .then(function (response) {
+            const $ = cheerio.load(response.data.toString());
+
+            var summary = $('.2019coronavirus-summary');
+            var positive_cases = summary.find('li').eq(0).text().split(' ')[2];
+            var deaths = summary.find('li').eq(1).text().split(' ')[2];
+            
+            var updated_data = false;
+            if (positive_cases != state.fed.positive_cases ) {
+              updated_data = true
+            }
+            if (deaths != state.fed.deaths ) {
+              updated_data = true
+            }
+
+            temp_result = {
+              "positive_cases": positive_cases,
+              "deaths": deaths,
+              "updated_data": updated_data
+            };
+            if (discord_post && updated_data) {
+              axios.post(process.env.DISCORD_WEBHOOK_URL, {
+                  content: `New Federal Coronavirus Data: \nPositive Cases: ${positive_cases}\nDeaths: ${deaths}`
+              })
+            }
+
+            storeState("fed", temp_result);
+          })
+          .catch(function (error) {
+            console.log("Failed to get fed cases: " + error);
+          });
+      },
+    },
+    "mn": {
+      config: {
+        url: mn_url,
+      },
+      updater: function(config) {
+        axios.get(config.url)
+          .then(function (response) {
+            const $ = cheerio.load(response.data.toString());
+
+            var positive_cases = $('td').eq(1).text()
+            var negative_cases = $('td').eq(3).text()
+            var total_cases = $('td').eq(5).text()
+            //console.log("Positive Cases " + positive_cases);
+            //console.log("Negative Cases " + negative_cases);
+            //console.log("Total Cases " + total_cases);
+
+            //check to see if data is updated
+            var updated_data = false;
+            if (positive_cases != state.mn.positive_cases ) {
+              updated_data = true
+            }
+            if (negative_cases != state.mn.negative_cases ) {
+              updated_data = true
+            }
+            if (total_cases != state.mn.total_cases ) {
+              updated_data = true
+            }
+
+            
+            temp_result = {
+              "positive_cases": positive_cases,
+              "negative_cases": negative_cases,
+              "total_cases": total_cases,
+              "updated_data": updated_data
+            };
+            if (discord_post && updated_data) {
+              axios.post(process.env.DISCORD_WEBHOOK_URL, {
+                  content: `New Minnesota Coronavirus Data: \nPositive: ${positive_cases}\nNegative: ${negative_cases}\nTotal Cases: ${total_cases}`
+              })
+            }
+
+            storeState("mn", temp_result);
+          })
+          .catch(function (error) {
+            console.log("Failed to get MN cases: " + error);
+          });
+      }
+    },
     "ny": {},
     "or": {},
     "pa": {},
@@ -36,118 +122,34 @@ var result = {
 function loadState() {
   //thanks w3schools
   fs.readFile('state.json', function(err, data) {
-  state = JSON.parse(data);
-  result = state;
-  console.log("Loaded state from filesystem!")
+    state = JSON.parse(data)
+    console.log("Loaded state from filesystem!");
   });
 }
 
-function writeState() {
+function storeState(state_name, val) {
+  state[state_name] = val;
+  console.log("Set state " + state_name + " to " + val);
   //thanks stackabuse.com
-  fs.writeFile('state.json', JSON.stringify(result), (err) => {
+  fs.writeFile('state.json', JSON.stringify(state), (err) => {
     if (err) throw err;
-    console.log("Saved state to filesystem!")
+    console.log("Saved state to filesystem!");
   });
 }
-
 
 loadState()
+
+for (let [state, manager] of Object.entries(managers)) {
+  if (typeof manager.updater != "undefined") {
+    setInterval(function() {
+      manager.updater(manager.config);
+    }, 4000);
+  }
+}
 
 app.get('/', (req, res) => res.send('Hello World!'))
 app.get('/cases/mn', (req, res) => res.send(result.mn))
 app.get('/cases/fed', (req, res) => res.send(result.fed))
-
-
-//update MN cases data
-setInterval(function(){
-  axios.get(mn_url)
-    .then(function (response) {
-      const $ = cheerio.load(response.data.toString());
-
-      var positive_cases = $('td').eq(1).text()
-      var negative_cases = $('td').eq(3).text()
-      var total_cases = $('td').eq(5).text()
-      //console.log("Positive Cases " + positive_cases);
-      //console.log("Negative Cases " + negative_cases);
-      //console.log("Total Cases " + total_cases);
-
-      //check to see if data is updated
-      var updated_data = false;
-      if (positive_cases != result.mn.positive_cases ) {
-        updated_data = true
-      }
-      if (negative_cases != result.mn.negative_cases ) {
-        updated_data = true
-      }
-      if (total_cases != result.mn.total_cases ) {
-        updated_data = true
-      }
-
-      
-      temp_result = {
-        "positive_cases": positive_cases,
-        "negative_cases": negative_cases,
-        "total_cases": total_cases,
-        "updated_data": updated_data
-      };
-      if (discord_post && updated_data) {
-        axios.post(process.env.DISCORD_WEBHOOK_URL, {
-            content: `New Minnesota Coronavirus Data: \nPositive: ${positive_cases}\nNegative: ${negative_cases}\nTotal Cases: ${total_cases}`
-        })
-      }
-
-      result.mn = temp_result
-      console.log(result.mn)
-    }).then(function(){
-      writeState()
-    })
-    .catch(function (error) {
-      console.log("Failed to get MN cases: " + error);
-    });
-}, 4000);
-
-
-
-
-//update fed cases data
-setInterval(function(){
-  axios.get(fed_url)
-    .then(function (response) {
-      const $ = cheerio.load(response.data.toString());
-
-      var summary = $('.2019coronavirus-summary');
-      var positive_cases = summary.find('li').eq(0).text().split(' ')[2];
-      var deaths = summary.find('li').eq(1).text().split(' ')[2];
-      
-      var updated_data = false;
-      if (positive_cases != result.fed.positive_cases ) {
-        updated_data = true
-      }
-      if (deaths != result.fed.deaths ) {
-        updated_data = true
-      }
-
-      temp_result = {
-        "positive_cases": positive_cases,
-        "deaths": deaths,
-        "updated_data": updated_data
-      };
-      if (discord_post && updated_data) {
-        axios.post(process.env.DISCORD_WEBHOOK_URL, {
-            content: `New Federal Coronavirus Data: \nPositive Cases: ${positive_cases}\nDeaths: ${deaths}`
-        })
-      }
-
-      result.fed = temp_result
-      
-      console.log(result.fed)
-    }).then(function(){
-      writeState()
-    })
-    .catch(function (error) {
-      console.log("Failed to get fed cases: " + error);
-    });
-}, 4000);
 
 //discord bot
 client.on('ready', () => {
@@ -168,4 +170,7 @@ client.on('message', msg => {
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
-client.login(process.env.DISCORD_TOKEN);
+
+if (discord_post) {
+  client.login(process.env.DISCORD_TOKEN);
+}
