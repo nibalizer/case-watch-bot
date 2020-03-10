@@ -2,8 +2,9 @@
   "name": "case-watch-bot",
   "version": "1.0.0",
   "description": "Watch MN Dept of Health website for coronavirus cases",
-  "main": "parse.js",
+  "main": "main.js",
   "scripts": {
+    "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Spencer Krum",
