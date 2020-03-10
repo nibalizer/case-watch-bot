@@ -4,9 +4,13 @@ const axios = require('axios')
 const fs = require('fs')
 const express = require('express')
 const app = express()
+const Discord = require('discord.js');
+const client = new Discord.Client();
+
 const port = 3000
 const mn_url = process.env.SITUATION_URL 
 const fed_url = "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html"
+
 var discord_post = false
 if (process.env.DISCORD_POST == "true") {
   discord_post = true
@@ -132,5 +136,23 @@ setInterval(function(){
     });
 }, 4000);
 
+//discord bot
+client.on('ready', () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+});
+
+
+client.on('message', msg => {
+  if (msg.content === '!mn') {
+    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${result.mn.positive_cases}\nNegative: ${result.mn.negative_cases}\nTotal Cases: ${result.mn.total_cases}`);
+  }
+});
+
+client.on('message', msg => {
+  if (msg.content === '!fed') {
+    msg.reply(`Federal Coronavirus Data: \nPositive: ${result.fed.positive_cases}\nDeaths: ${result.fed.deaths}`);
+  }
+});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+client.login(process.env.DISCORD_TOKEN);
