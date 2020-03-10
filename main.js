@@ -204,13 +204,19 @@ client.on('ready', () => {
 
 client.on('message', msg => {
   if (msg.content === '!mn') {
-    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${result.mn.positive_cases}\nNegative: ${result.mn.negative_cases}\nTotal Cases: ${result.mn.total_cases}`);
+    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nNegative: ${state.mn.negative_cases}\nTotal Cases: ${state.mn.total_cases}`);
   }
 });
 
 client.on('message', msg => {
   if (msg.content === '!fed') {
-    msg.reply(`Federal Coronavirus Data: \nPositive: ${result.fed.positive_cases}\nDeaths: ${result.fed.deaths}`);
+    msg.reply(`Federal Coronavirus Data: \nPositive: ${state.fed.positive_cases}\nDeaths: ${state.fed.deaths}`);
+  }
+});
+
+client.on('message', msg => {
+  if (msg.content === '!ny') {
+    msg.reply(`New York Coronavirus Data: \nNYC Cases: ${state.ny.nyc_cases}\nNon-NYC Cases: ${state.ny.upstate_cases}\nTotal Cases: ${state.ny.total_cases}`)
   }
 });
 
