@@ -4,11 +4,13 @@ const axios = require('axios')
 const express = require('express')
 const app = express()
 const port = 3000
-const url = process.env.SITUATION_URL 
+const mn_url = process.env.SITUATION_URL 
+const fed_url = "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html"
 
 
 var result = {
     "ca": {},
+    "fed": {},
     "mn": {},
     "ny": {},
     "or": {},
@@ -19,12 +21,12 @@ var result = {
 
 app.get('/', (req, res) => res.send('Hello World!'))
 app.get('/cases/mn', (req, res) => res.send(result.mn))
-app.get('/cases/mn', (req, res) => res.send(result.mn))
+app.get('/cases/fed', (req, res) => res.send(result.fed))
 
 
 //update MN cases data
 setInterval(function(){
-  axios.get(url)
+  axios.get(mn_url)
     .then(function (response) {
       const $ = cheerio.load(response.data.toString());
 
@@ -61,10 +63,47 @@ setInterval(function(){
       }
 
       result.mn = temp_result
-      
-
-      console.log(result)
+      console.log(result.mn)
     });
 }, 4000);
+
+
+
+
+//update fed cases data
+setInterval(function(){
+  axios.get(fed_url)
+    .then(function (response) {
+      const $ = cheerio.load(response.data.toString());
+
+      var summary = $('.2019coronavirus-summary');
+      var positive_cases = summary.find('li').eq(0).text();
+      var deaths = summary.find('li').eq(1).text();
+      
+      var updated_data = false;
+      if (positive_cases != result.fed.positive_cases ) {
+        updated_data = true
+      }
+      if (deaths != result.fed.deaths ) {
+        updated_data = true
+      }
+
+      temp_result = {
+        "positive_cases": positive_cases,
+        "deaths": deaths,
+        "updated_data": updated_data
+      };
+      if (updated_data) {
+        axios.post(process.env.DISCORD_WEBHOOK_URL, {
+            content: `New Federal Coronavirus Data: \nPositive Cases: ${positive_cases}\nDeaths: ${deaths}`
+        })
+      }
+
+      result.fed = temp_result
+      
+      console.log(result.fed)
+    });
+}, 4000);
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
