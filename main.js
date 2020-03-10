@@ -12,9 +12,16 @@ const mn_url = process.env.SITUATION_URL
 const fed_url = "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html"
 
 var discord_post = false
+
 if (process.env.DISCORD_POST == "true") {
   discord_post = true
 }
+
+if (typeof process.env.SITUATION_URL == 'undefined') {
+  console.log("Please set env var SITUATION_URL")
+  process.exit(1)
+}
+
 
 var result = {
     "ca": {},
@@ -93,6 +100,9 @@ setInterval(function(){
       console.log(result.mn)
     }).then(function(){
       writeState()
+    })
+    .catch(function (error) {
+      console.log("Failed to get MN cases: " + error);
     });
 }, 4000);
 
@@ -133,6 +143,9 @@ setInterval(function(){
       console.log(result.fed)
     }).then(function(){
       writeState()
+    })
+    .catch(function (error) {
+      console.log("Failed to get fed cases: " + error);
     });
 }, 4000);
 
