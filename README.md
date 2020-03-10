@@ -8,6 +8,7 @@ Get discord notifications when there are new cases of covid-19 discovered in you
 ```
 git clone https://github.com/nibalizer/case-watch-bot
 cp .env.example .env
+cp example.state.json state.json
 vim .env
 # add your discord webhook to the config file
 npm install 

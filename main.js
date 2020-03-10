@@ -1,6 +1,7 @@
 require('dotenv').config()
 const cheerio = require('cheerio')
 const axios = require('axios')
+const fs = require('fs')
 const express = require('express')
 const app = express()
 const port = 3000
@@ -10,7 +11,6 @@ var discord_post = false
 if (process.env.DISCORD_POST == "true") {
   discord_post = true
 }
-
 
 var result = {
     "ca": {},
@@ -22,6 +22,25 @@ var result = {
     "tx": {}
 }
 
+function loadState() {
+  //thanks w3schools
+  fs.readFile('state.json', function(err, data) {
+  state = JSON.parse(data);
+  result = state;
+  console.log("Loaded state from filesystem!")
+  });
+}
+
+function writeState() {
+  //thanks stackabuse.com
+  fs.writeFile('state.json', JSON.stringify(result), (err) => {
+    if (err) throw err;
+    console.log("Saved state to filesystem!")
+  });
+}
+
+
+loadState()
 
 app.get('/', (req, res) => res.send('Hello World!'))
 app.get('/cases/mn', (req, res) => res.send(result.mn))
@@ -68,6 +87,8 @@ setInterval(function(){
 
       result.mn = temp_result
       console.log(result.mn)
+    }).then(function(){
+      writeState()
     });
 }, 4000);
 
@@ -106,6 +127,8 @@ setInterval(function(){
       result.fed = temp_result
       
       console.log(result.fed)
+    }).then(function(){
+      writeState()
     });
 }, 4000);
 
