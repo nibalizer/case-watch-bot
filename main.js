@@ -46,12 +46,17 @@ setInterval(function(){
         "total_cases": total_cases,
         "updated_data": updated_data
       };
+      if (updated_data) {
+        axios.post(process.env.DISCORD_WEBHOOK_URL, {
+            content: `New Coronavirus Data: \n${positive_cases} Positive\n${negative_cases} Negative\n${total_cases}: Total cases`
+        })
+      }
 
       result = temp_result
       
 
       console.log(result)
     });
-}, 1000);
+}, 4000);
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
