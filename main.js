@@ -106,8 +106,8 @@ setInterval(function(){
       const $ = cheerio.load(response.data.toString());
 
       var summary = $('.2019coronavirus-summary');
-      var positive_cases = summary.find('li').eq(0).text();
-      var deaths = summary.find('li').eq(1).text();
+      var positive_cases = summary.find('li').eq(0).text().split(' ')[2];
+      var deaths = summary.find('li').eq(1).text().split(' ')[2];
       
       var updated_data = false;
       if (positive_cases != result.fed.positive_cases ) {
