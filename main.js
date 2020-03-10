@@ -7,11 +7,19 @@ const port = 3000
 const url = process.env.SITUATION_URL 
 
 
-var result = {}
+var result = {
+    "ca": {},
+    "mn": {},
+    "ny": {},
+    "or": {},
+    "pa": {},
+    "tx": {}
+}
 
 
 app.get('/', (req, res) => res.send('Hello World!'))
-app.get('/cases/mn', (req, res) => res.send(result))
+app.get('/cases/mn', (req, res) => res.send(result.mn))
+app.get('/cases/mn', (req, res) => res.send(result.mn))
 
 
 //update MN cases data
@@ -29,13 +37,13 @@ setInterval(function(){
 
       //check to see if data is updated
       var updated_data = false;
-      if (positive_cases != result.positive_cases ) {
+      if (positive_cases != result.mn.positive_cases ) {
         updated_data = true
       }
-      if (negative_cases != result.negative_cases ) {
+      if (negative_cases != result.mn.negative_cases ) {
         updated_data = true
       }
-      if (total_cases != result.total_cases ) {
+      if (total_cases != result.mn.total_cases ) {
         updated_data = true
       }
 
@@ -52,7 +60,7 @@ setInterval(function(){
         })
       }
 
-      result = temp_result
+      result.mn = temp_result
       
 
       console.log(result)
