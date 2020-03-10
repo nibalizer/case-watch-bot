@@ -68,15 +68,14 @@ var managers = {
 
             temp_result = {
               "positive_cases": $('td').eq(1).text(),
-              "negative_cases": $('td').eq(3).text(),
-              "total_cases": $('td').eq(5).text(),
+              "total_cases": $('td').eq(3).text(),
             };
             updated_data = checkDataUpdate(temp_result, "mn", state)
             temp_result["updated_data"] = updated_data;
 
             if (discord_post && updated_data) {
               axios.post(process.env.DISCORD_WEBHOOK_URL, {
-                  content: `New Minnesota Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nNegative: ${temp_result.negative_cases}\nTotal Cases: ${temp_result.total_cases}`
+                  content: `New Minnesota Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nTotal Tested: ${temp_result.total_cases}`
               })
             }
 
@@ -173,7 +172,7 @@ client.on('ready', () => {
 
 client.on('message', msg => {
   if (msg.content === '!mn') {
-    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nNegative: ${state.mn.negative_cases}\nTotal Cases: ${state.mn.total_cases}`);
+    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nTotal Cases: ${state.mn.total_cases}`);
   }
 });
 
