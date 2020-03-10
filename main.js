@@ -48,7 +48,7 @@ setInterval(function(){
       };
       if (updated_data) {
         axios.post(process.env.DISCORD_WEBHOOK_URL, {
-            content: `New Coronavirus Data: \n${positive_cases} Positive\n${negative_cases} Negative\n${total_cases}: Total cases`
+            content: `New Minnesota Coronavirus Data: \nPositive: ${positive_cases}\nNegative: ${negative_cases}\nTotal Cases: ${total_cases}`
         })
       }
 
