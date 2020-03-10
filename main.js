@@ -8,7 +8,8 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 
 const port = 3000
-const mn_url = process.env.SITUATION_URL 
+const mn_url = process.env.SITUATION_URL
+const ny_url = "https://www.health.ny.gov/diseases/communicable/coronavirus/"
 const fed_url = "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html"
 
 var discord_post = false
@@ -38,7 +39,7 @@ var managers = {
             var summary = $('.2019coronavirus-summary');
             var positive_cases = summary.find('li').eq(0).text().split(' ')[2];
             var deaths = summary.find('li').eq(1).text().split(' ')[2];
-            
+
             var updated_data = false;
             if (positive_cases != state.fed.positive_cases ) {
               updated_data = true
@@ -93,7 +94,7 @@ var managers = {
               updated_data = true
             }
 
-            
+
             temp_result = {
               "positive_cases": positive_cases,
               "negative_cases": negative_cases,
@@ -113,7 +114,51 @@ var managers = {
           });
       }
     },
-    "ny": {},
+    "ny": {
+      config: {
+        url: ny_url,
+      },
+      updater: function(config) {
+        axios.get(config.url)
+          .then(function (response) {
+            const $ = cheerio.load(response.data.toString());
+
+            var upstate_cases = $('td').eq(13).text()
+            var nyc_cases = $('td').eq(15).text()
+            var total_cases = $('td').eq(17).text()
+
+            //check to see if data is updated
+            var updated_data = false;
+            if (nyc_cases != state.ny.nyc_cases ) {
+              updated_data = true
+            }
+            if (upstate_cases != state.ny.upstate_cases ) {
+              updated_data = true
+            }
+            if (total_cases != state.ny.total_cases ) {
+              updated_data = true
+            }
+
+
+            temp_result = {
+              "nyc_cases": nyc_cases,
+              "upstate_cases": upstate_cases,
+              "total_cases": total_cases,
+              "updated_data": updated_data
+            };
+            if (discord_post && updated_data) {
+              axios.post(process.env.DISCORD_WEBHOOK_URL, {
+                  content: `New York Coronavirus Data: \nNYC Cases: ${nyc_cases}\nNon-NYC Cases: ${upstate_cases}\nTotal Cases: ${total_cases}`
+              })
+            }
+
+            storeState("ny", temp_result);
+          })
+          .catch(function (error) {
+            console.log("Failed to get NY cases: " + error);
+          });
+      }
+    },
     "or": {},
     "pa": {},
     "tx": {}
