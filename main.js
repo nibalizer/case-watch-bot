@@ -6,6 +6,10 @@ const app = express()
 const port = 3000
 const mn_url = process.env.SITUATION_URL 
 const fed_url = "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html"
+var discord_post = false
+if (process.env.DISCORD_POST == "true") {
+  discord_post = true
+}
 
 
 var result = {
@@ -56,7 +60,7 @@ setInterval(function(){
         "total_cases": total_cases,
         "updated_data": updated_data
       };
-      if (updated_data) {
+      if (discord_post && updated_data) {
         axios.post(process.env.DISCORD_WEBHOOK_URL, {
             content: `New Minnesota Coronavirus Data: \nPositive: ${positive_cases}\nNegative: ${negative_cases}\nTotal Cases: ${total_cases}`
         })
@@ -93,7 +97,7 @@ setInterval(function(){
         "deaths": deaths,
         "updated_data": updated_data
       };
-      if (updated_data) {
+      if (discord_post && updated_data) {
         axios.post(process.env.DISCORD_WEBHOOK_URL, {
             content: `New Federal Coronavirus Data: \nPositive Cases: ${positive_cases}\nDeaths: ${deaths}`
         })
