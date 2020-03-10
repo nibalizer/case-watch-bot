@@ -22,7 +22,7 @@ app.get('/situation_1.html', function (req, res) {
 app.get('/situation_2.html', function (req, res) {
   hit_count += 1
   var params = [2, 80, 82]
-  if (hit_count % 3 == 0) {
+  if (hit_count % 17 == 0) {
       params = [4, 92, 96]
   }
   res.render('situation', { title: 'Hey', message: 'Hello there!', positive: params[0], negative: params[1], total: params[2] })
