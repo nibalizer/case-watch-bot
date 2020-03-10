@@ -174,7 +174,7 @@ function loadState() {
 
 function storeState(state_name, val) {
   state[state_name] = val;
-  console.log("Set state " + state_name + " to " + val);
+  console.log("Set state " + state_name + " to " + JSON.stringify(val));
   //thanks stackabuse.com
   fs.writeFile('state.json', JSON.stringify(state), (err) => {
     if (err) throw err;
