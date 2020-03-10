@@ -35,27 +35,18 @@ var managers = {
         axios.get(config.url)
           .then(function (response) {
             const $ = cheerio.load(response.data.toString());
-
             var summary = $('.2019coronavirus-summary');
-            var positive_cases = summary.find('li').eq(0).text().split(' ')[2];
-            var deaths = summary.find('li').eq(1).text().split(' ')[2];
-
-            var updated_data = false;
-            if (positive_cases != state.fed.positive_cases ) {
-              updated_data = true
-            }
-            if (deaths != state.fed.deaths ) {
-              updated_data = true
-            }
 
             temp_result = {
-              "positive_cases": positive_cases,
-              "deaths": deaths,
-              "updated_data": updated_data
+              "positive_cases": summary.find('li').eq(0).text().split(' ')[2],
+              "deaths": summary.find('li').eq(1).text().split(' ')[2],
             };
+            updated_data = checkDataUpdate(temp_result, "fed", state)
+            temp_result["updated_data"] = updated_data;
+
             if (discord_post && updated_data) {
               axios.post(process.env.DISCORD_WEBHOOK_URL, {
-                  content: `New Federal Coronavirus Data: \nPositive Cases: ${positive_cases}\nDeaths: ${deaths}`
+                  content: `New Federal Coronavirus Data: \nPositive Cases: ${temp_result.positive_cases}\nDeaths: ${temp_result.deaths}`
               })
             }
 
@@ -75,35 +66,17 @@ var managers = {
           .then(function (response) {
             const $ = cheerio.load(response.data.toString());
 
-            var positive_cases = $('td').eq(1).text()
-            var negative_cases = $('td').eq(3).text()
-            var total_cases = $('td').eq(5).text()
-            //console.log("Positive Cases " + positive_cases);
-            //console.log("Negative Cases " + negative_cases);
-            //console.log("Total Cases " + total_cases);
-
-            //check to see if data is updated
-            var updated_data = false;
-            if (positive_cases != state.mn.positive_cases ) {
-              updated_data = true
-            }
-            if (negative_cases != state.mn.negative_cases ) {
-              updated_data = true
-            }
-            if (total_cases != state.mn.total_cases ) {
-              updated_data = true
-            }
-
-
             temp_result = {
-              "positive_cases": positive_cases,
-              "negative_cases": negative_cases,
-              "total_cases": total_cases,
-              "updated_data": updated_data
+              "positive_cases": $('td').eq(1).text(),
+              "negative_cases": $('td').eq(3).text(),
+              "total_cases": $('td').eq(5).text(),
             };
+            updated_data = checkDataUpdate(temp_result, "mn", state)
+            temp_result["updated_data"] = updated_data;
+
             if (discord_post && updated_data) {
               axios.post(process.env.DISCORD_WEBHOOK_URL, {
-                  content: `New Minnesota Coronavirus Data: \nPositive: ${positive_cases}\nNegative: ${negative_cases}\nTotal Cases: ${total_cases}`
+                  content: `New Minnesota Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nNegative: ${temp_result.negative_cases}\nTotal Cases: ${temp_result.total_cases}`
               })
             }
 
@@ -123,32 +96,17 @@ var managers = {
           .then(function (response) {
             const $ = cheerio.load(response.data.toString());
 
-            var upstate_cases = $('td').eq(13).text()
-            var nyc_cases = $('td').eq(15).text()
-            var total_cases = $('td').eq(17).text()
-
-            //check to see if data is updated
-            var updated_data = false;
-            if (nyc_cases != state.ny.nyc_cases ) {
-              updated_data = true
-            }
-            if (upstate_cases != state.ny.upstate_cases ) {
-              updated_data = true
-            }
-            if (total_cases != state.ny.total_cases ) {
-              updated_data = true
-            }
-
-
             temp_result = {
-              "nyc_cases": nyc_cases,
-              "upstate_cases": upstate_cases,
-              "total_cases": total_cases,
-              "updated_data": updated_data
+              "nyc_cases": $('td').eq(15).text(),
+              "upstate_cases": $('td').eq(13).text(),
+              "total_cases": $('td').eq(17).text(),
             };
+            updated_data = checkDataUpdate(temp_result, "ny", state)
+            temp_result["updated_data"] = updated_data;
+
             if (discord_post && updated_data) {
               axios.post(process.env.DISCORD_WEBHOOK_URL, {
-                  content: `New York Coronavirus Data: \nNYC Cases: ${nyc_cases}\nNon-NYC Cases: ${upstate_cases}\nTotal Cases: ${total_cases}`
+                  content: `New York Coronavirus Data: \nNYC Cases: ${temp_result.nyc_cases}\nNon-NYC Cases: ${temp_result.upstate_cases}\nTotal Cases: ${temp_result.total_cases}`
               })
             }
 
@@ -162,6 +120,17 @@ var managers = {
     "or": {},
     "pa": {},
     "tx": {}
+}
+
+function checkDataUpdate(cases, loc, state) {
+    var is_updated = false;
+    for (var key in cases){
+        let val = cases[key];
+        if (val != state[loc][key]){
+            is_updated = true;
+        }
+    }
+    return is_updated;
 }
 
 function loadState() {
