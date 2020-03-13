@@ -65,10 +65,11 @@ var managers = {
         axios.get(config.url)
           .then(function (response) {
             const $ = cheerio.load(response.data.toString());
+            var body = $('#body');
 
             temp_result = {
-              "positive_cases": $('td').eq(1).text(),
-              "total_cases": $('td').eq(3).text(),
+              "positive_cases": body.find('li').eq(1).text().split(' ')[0],
+              "total_cases": body.find('li').eq(0).text().split(' ')[0],
             };
             updated_data = checkDataUpdate(temp_result, "mn", state)
             temp_result["updated_data"] = updated_data;
