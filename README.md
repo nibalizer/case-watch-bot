@@ -2,6 +2,8 @@
 
 Get discord notifications when there are new cases of covid-19 discovered in your state
 
+![covid 19 bot](img/covid-19bot.png)
+
 
 ## quickstart
 
