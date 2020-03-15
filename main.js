@@ -27,6 +27,38 @@ var state = {}
 
 var managers = {
     "ca": {},
+    "ri": {
+      config: {
+          url: "https://docs.google.com/spreadsheets/u/0/d/1n-zMS9Al94CPj_Tc3K7Adin-tN9x1RSjjx2UzJ4SV7Q/gviz/tq?headers=0&range=A2:B5&gid=0&tqx=reqId:1",
+      },
+      updater: function(config) {
+        axios.get(config.url)
+          .then(function (response) {
+            var payload = response.data.toString().slice(47, -2);
+            var summary = JSON.parse(payload)
+
+            temp_result = {
+              "positive_cases": summary.table.rows[0].c[1].v,
+              "negative_tests": summary.table.rows[1].c[1].v,
+              "pending_tests": summary.table.rows[2].c[1].v,
+              "quarantine": summary.table.rows[3].c[1].v
+            };
+            updated_data = checkDataUpdate(temp_result, "ri", state)
+            temp_result["updated_data"] = updated_data;
+
+            if (discord_post && updated_data) {
+              axios.post(process.env.DISCORD_WEBHOOK_URL, {
+                  content: `New Rhode Island Coronavirus Data: \nPositive Cases: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nPending Tests: ${temp_result.pending_tests}\nUnder Quarantine: ${temp_result.quarantine}`
+              })
+            }
+
+            storeState("ri", temp_result);
+          })
+          .catch(function (error) {
+            console.log("Failed to get ri cases: " + error);
+          });
+      },
+    },
     "fed": {
       config: {
         url: "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html",
@@ -163,6 +195,7 @@ for (let [state, manager] of Object.entries(managers)) {
 
 app.get('/', (req, res) => res.send('Hello World!'))
 app.get('/cases/mn', (req, res) => res.send(result.mn))
+app.get('/cases/ri', (req, res) => res.send(result.ri))
 app.get('/cases/fed', (req, res) => res.send(result.fed))
 
 //discord bot
@@ -186,6 +219,12 @@ client.on('message', msg => {
 client.on('message', msg => {
   if (msg.content === '!ny') {
     msg.reply(`New York Coronavirus Data: \nNYC Cases: ${state.ny.nyc_cases}\nNon-NYC Cases: ${state.ny.upstate_cases}\nTotal Cases: ${state.ny.total_cases}`)
+  }
+});
+
+client.on('message', msg => {
+  if (msg.content === '!ri') {
+    msg.reply(`New Rhode Island Coronavirus Data: \nPositive Cases: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nPending Tests: ${temp_result.pending_tests}\nUnder Quarantine: ${temp_result.quarantine}`)
   }
 });
 
