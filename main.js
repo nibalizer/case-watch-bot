@@ -48,7 +48,7 @@ var managers = {
 
             if (discord_post && updated_data) {
               axios.post(process.env.DISCORD_WEBHOOK_URL, {
-                  content: `New Rhode Island Coronavirus Data: \nPositive Cases: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nPending Tests: ${temp_result.pending_tests}\nUnder Quarantine: ${temp_result.quarantine}`
+                  content: `New Rhode Island Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nPending Tests: ${temp_result.pending_tests}\nUnder Quarantine: ${temp_result.quarantine}`
               })
             }
 
@@ -138,7 +138,7 @@ var managers = {
 
             if (discord_post && updated_data) {
               axios.post(process.env.DISCORD_WEBHOOK_URL, {
-                  content: `New York Coronavirus Data: \nNYC Cases: ${temp_result.nyc_cases}\nNon-NYC Cases: ${temp_result.upstate_cases}\nTotal Cases: ${temp_result.total_cases}`
+                  content: `New York Coronavirus Data: \nNYC Positive Cases: ${temp_result.nyc_cases}\nNon-NYC Positive Cases: ${temp_result.upstate_cases}\nTotal Positive Cases: ${temp_result.total_cases}`
               })
             }
 
@@ -218,13 +218,13 @@ client.on('message', msg => {
 
 client.on('message', msg => {
   if (msg.content === '!ny') {
-    msg.reply(`New York Coronavirus Data: \nNYC Cases: ${state.ny.nyc_cases}\nNon-NYC Cases: ${state.ny.upstate_cases}\nTotal Cases: ${state.ny.total_cases}`)
+    msg.reply(`New York Coronavirus Data: \nNYC Positive: ${state.ny.nyc_cases}\nNon-NYC Positive: ${state.ny.upstate_cases}\nTotal Positive: ${state.ny.total_cases}`)
   }
 });
 
 client.on('message', msg => {
   if (msg.content === '!ri') {
-    msg.reply(`New Rhode Island Coronavirus Data: \nPositive Cases: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nPending Tests: ${temp_result.pending_tests}\nUnder Quarantine: ${temp_result.quarantine}`)
+    msg.reply(`Rhode Island Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nPending Tests: ${temp_result.pending_tests}\nUnder Quarantine: ${temp_result.quarantine}`)
   }
 });
 
