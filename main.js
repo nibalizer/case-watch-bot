@@ -97,9 +97,9 @@ var managers = {
             const $ = cheerio.load(response.data.toString());
 
             temp_result = {
-              "nyc_cases": $('td').eq(35).text(),
-              "upstate_cases": $('td').eq(33).text(),
-              "total_cases": $('td').eq(37).text(),
+              "upstate_cases": $('td').eq(-5).text(),
+              "nyc_cases": $('td').eq(-3).text(),
+              "total_cases": $('td').eq(-1).text(),
             };
             updated_data = checkDataUpdate(temp_result, "ny", state)
             temp_result["updated_data"] = updated_data;
