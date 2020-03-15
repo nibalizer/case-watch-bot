@@ -1,9 +1,34 @@
 {
   "ca": {},
-  "fed": {},
-  "mn": {},
-  "ny": {},
-  "or": {},
+  "fed": {
+    "positive_cases": "1,629",
+    "deaths": "41",
+    "updated_data": false
+  },
+  "mn": {
+    "positive_cases": "35",
+    "total_cases": "1422",
+    "updated_data": false
+  },
+  "ny": {
+    "upstate_cases": "344",
+    "nyc_cases": "269",
+    "total_cases": "613",
+    "updated_data": false
+  },
+  "ri": {
+    "positive_cases": 20,
+    "negative_tests": 198,
+    "pending_tests": 57,
+    "quarantine": 600,
+    "updated_data": false
+  },
+  "or": {
+    "positive_cases": 36,
+    "negative_tests": 420,
+    "pending_tests": 225,
+    "updated_data": false
+  },
   "pa": {},
   "tx": {}
 }
