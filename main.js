@@ -206,7 +206,7 @@ client.on('ready', () => {
 
 client.on('message', msg => {
   if (msg.content === '!mn') {
-    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nTotal Cases: ${state.mn.total_cases}`);
+    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nTotal Tested: ${state.mn.total_cases}`);
   }
 });
 
