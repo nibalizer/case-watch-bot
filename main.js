@@ -1,26 +1,26 @@
-require('dotenv').config()
-const cheerio = require('cheerio')
-const axios = require('axios')
-const fs = require('fs')
-const express = require('express')
-const app = express()
+require('dotenv').config();
+const cheerio = require('cheerio');
+const axios = require('axios');
+const fs = require('fs');
+const express = require('express');
+const app = express();
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-const port = 3000
-const mn_url = process.env.SITUATION_URL
-const ny_url = "https://www.health.ny.gov/diseases/communicable/coronavirus/"
-const fed_url = "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html"
+const port = 3000;
+const mn_url = process.env.SITUATION_URL;
+const ny_url = "https://www.health.ny.gov/diseases/communicable/coronavirus/";
+const fed_url = "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html";
 
-var discord_post = false
+let discord_post = false;
 
 if (process.env.DISCORD_POST == "true") {
-  discord_post = true
+  discord_post = true;
 }
 
 if (typeof process.env.SITUATION_URL == 'undefined') {
-  console.log("Please set env var SITUATION_URL")
-  process.exit(1)
+  console.log("Please set env var SITUATION_URL");
+  process.exit(1);
 }
 
 var state = {}
@@ -31,11 +31,11 @@ var managers = {
       config: {
           url: "https://docs.google.com/spreadsheets/u/0/d/1n-zMS9Al94CPj_Tc3K7Adin-tN9x1RSjjx2UzJ4SV7Q/gviz/tq?headers=0&range=A2:B5&gid=0&tqx=reqId:1",
       },
-      updater: function(config) {
+      updater: config => {
         axios.get(config.url)
-          .then(function (response) {
+          .then(response => {
             var payload = response.data.toString().slice(47, -2);
-            var summary = JSON.parse(payload)
+            var summary = JSON.parse(payload);
 
             temp_result = {
               "positive_cases": summary.table.rows[0].c[1].v,
@@ -43,29 +43,27 @@ var managers = {
               "pending_tests": summary.table.rows[2].c[1].v,
               "quarantine": summary.table.rows[3].c[1].v
             };
-            updated_data = checkDataUpdate(temp_result, "ri", state)
+            updated_data = checkDataUpdate(temp_result, "ri", state);
             temp_result["updated_data"] = updated_data;
 
             if (discord_post && updated_data) {
               axios.post(process.env.DISCORD_WEBHOOK_URL, {
                   content: `New Rhode Island Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nPending Tests: ${temp_result.pending_tests}\nUnder Quarantine: ${temp_result.quarantine}`
-              })
+              });
             }
 
             storeState("ri", temp_result);
           })
-          .catch(function (error) {
-            console.log("Failed to get ri cases: " + error);
-          });
+          .catch(error => console.log("Failed to get ri cases: " + error));
       },
     },
     "fed": {
       config: {
         url: "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html",
       },
-      updater: function(config) {
+      updater: config => {
         axios.get(config.url)
-          .then(function (response) {
+          .then(response => {
             const $ = cheerio.load(response.data.toString());
             var summary = $('.2019coronavirus-summary');
 
@@ -73,20 +71,18 @@ var managers = {
               "positive_cases": summary.find('li').eq(0).text().split(' ')[2],
               "deaths": summary.find('li').eq(1).text().split(' ')[2],
             };
-            updated_data = checkDataUpdate(temp_result, "fed", state)
+            updated_data = checkDataUpdate(temp_result, "fed", state);
             temp_result["updated_data"] = updated_data;
 
             if (discord_post && updated_data) {
               axios.post(process.env.DISCORD_WEBHOOK_URL, {
                   content: `New Federal Coronavirus Data: \nPositive Cases: ${temp_result.positive_cases}\nDeaths: ${temp_result.deaths}`
-              })
+              });
             }
 
             storeState("fed", temp_result);
           })
-          .catch(function (error) {
-            console.log("Failed to get fed cases: " + error);
-          });
+          .catch(error => console.log("Failed to get fed cases: " + error));
       },
     },
     "mn": {
@@ -114,9 +110,7 @@ var managers = {
 
             storeState("mn", temp_result);
           })
-          .catch(function (error) {
-            console.log("Failed to get MN cases: " + error);
-          });
+          .catch(error => console.log("Failed to get mn cases: " + error));
       }
     },
     "ny": {
@@ -144,9 +138,7 @@ var managers = {
 
             storeState("ny", temp_result);
           })
-          .catch(function (error) {
-            console.log("Failed to get NY cases: " + error);
-          });
+          .catch(error => console.log("Failed to get ny cases: " + error));
       }
     },
     "or": {
@@ -176,9 +168,7 @@ var managers = {
 
             storeState("or", temp_result);
           })
-          .catch(function (error) {
-            console.log("Failed to get or cases: " + error);
-          });
+          .catch(error => console.log("Failed to get or cases: " + error));
       },
     },
     "pa": {},
