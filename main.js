@@ -206,7 +206,7 @@ const storeState = (state_name, val) => {
   //thanks stackabuse.com
   fs.writeFile('state.json', JSON.stringify(state), (err) => {
     if (err) throw err;
-    console.log("Saved state to filesystem!");
+    console.log('Saved state to filesystem!');
   });
 };
 
@@ -216,7 +216,7 @@ for (let [, manager] of Object.entries(managers)) {
   if (typeof manager.updater != 'undefined') {
     setInterval(() => {
       manager.updater(manager.config);
-    }, 4000);
+    }, 60000);
   }
 }
 
