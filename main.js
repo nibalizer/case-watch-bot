@@ -8,13 +8,20 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 
 const port = 3000;
+
+if (fs.existsSync(`~${__dirname}/state.json`)) {
+  console.log('Please copy the example.state.json to state.json');
+  process.exit(1);
+}
+
+if (fs.existsSync(`~${__dirname}/.env`)) {
+  console.log('Please copy the .env.example to .env');
+  process.exit(1);
+}
+
 const mn_url = process.env.SITUATION_URL;
 
-let discord_post = false;
-
-if (process.env.DISCORD_POST === 'true') {
-  discord_post = true;
-}
+let discord_post = process.env.DISCORD_POST === 'true';
 
 if (typeof process.env.SITUATION_URL == 'undefined') {
   console.log('Please set env var SITUATION_URL');
