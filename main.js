@@ -241,30 +241,27 @@ client.on('ready', () => {
 client.on('message', msg => {
   if (msg.content === '!mn') {
     msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nTotal Tested: ${state.mn.total_cases}`);
+    return;
   }
-});
 
-client.on('message', msg => {
   if (msg.content === '!fed') {
     msg.reply(`Federal Coronavirus Data: \nPositive: ${state.fed.positive_cases}\nDeaths: ${state.fed.deaths}`);
+    return;
   }
-});
 
-client.on('message', msg => {
   if (msg.content === '!ny') {
     msg.reply(`New York Coronavirus Data: \nNYC Positive: ${state.ny.nyc_cases}\nNon-NYC Positive: ${state.ny.upstate_cases}\nTotal Positive: ${state.ny.total_cases}`)
+    return;
   }
-});
 
-client.on('message', msg => {
   if (msg.content === '!ri') {
     msg.reply(`Rhode Island Coronavirus Data: \nPositive: ${state.ri.positive_cases}\nNegative tests: ${state.ri.negative_tests}\nPending Tests: ${state.ri.pending_tests}\nUnder Quarantine: ${state.ri.quarantine}`)
+    return;
   }
-});
 
-client.on('message', msg => {
   if (msg.content === '!or') {
     msg.reply(`Oregon Coronavirus Data: \nPositive: ${state.or.positive_cases}\nNegative tests: ${state.or.negative_tests}\nPending Tests: ${state.or.pending_tests}\n`)
+    return;
   }
 });
 
