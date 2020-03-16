@@ -42,10 +42,10 @@ let managers = {
           let summary = JSON.parse(payload);
 
           let temp_result = {
-            positive_cases: summary.table.rows[0].c[1].v,
-            negative_tests: summary.table.rows[1].c[1].v,
-            pending_tests: summary.table.rows[2].c[1].v,
-            quarantine: summary.table.rows[3].c[1].v,
+            positive_cases: parseInt(summary.table.rows[0].c[1].v),
+            negative_tests: parseInt(summary.table.rows[1].c[1].v),
+            pending_tests: parseInt(summary.table.rows[2].c[1].v),
+            quarantine: parseInt(summary.table.rows[3].c[1].v),
           };
           let updated_data = checkDataUpdate(temp_result, 'ri', state);
           temp_result['updated_data'] = updated_data;
@@ -72,8 +72,8 @@ let managers = {
           let summary = $('.2019coronavirus-summary');
 
           let temp_result = {
-            positive_cases: summary.find('li').eq(0).text().split(' ')[2],
-            deaths: summary.find('li').eq(1).text().split(' ')[2],
+            positive_cases: parseInt(summary.find('li').eq(0).text().split(' ')[2]),
+            deaths: parseInt(summary.find('li').eq(1).text().split(' ')[2]),
           };
           let updated_data = checkDataUpdate(temp_result, 'fed', state);
           temp_result['updated_data'] = updated_data;
@@ -100,8 +100,8 @@ let managers = {
           let body = $('#body');
 
           let temp_result = {
-            positive_cases: body.find('li').eq(1).text().split(' ')[0],
-            total_cases: body.find('li').eq(0).text().split(' ')[0],
+            positive_cases: parseInt(body.find('li').eq(1).text().split(' ')[0]),
+            total_cases: parseInt(body.find('li').eq(0).text().split(' ')[0]),
           };
           let updated_data = checkDataUpdate(temp_result, 'mn', state);
           temp_result['updated_data'] = updated_data;
@@ -128,9 +128,9 @@ let managers = {
 
           let $td = $('td');
           let temp_result = {
-            upstate_cases: $td.eq(-5).text(),
-            nyc_cases: $td.eq(-3).text(),
-            total_cases: $td.eq(-1).text(),
+            upstate_cases: parseInt($td.eq(-5).text()),
+            nyc_cases: parseInt($td.eq(-3).text()),
+            total_cases: parseInt($td.eq(-1).text()),
           };
           let updated_data = checkDataUpdate(temp_result, 'ny', state);
           temp_result['updated_data'] = updated_data;
@@ -158,9 +158,9 @@ let managers = {
           let $td = summary.find('td');
 
           let temp_result = {
-            positive_cases: parseFloat($td.eq(2).text()),
-            negative_tests: parseFloat($td.eq(4).text()),
-            pending_tests: parseFloat($td.eq(6).text()),
+            positive_cases: parseInt($td.eq(2).text()),
+            negative_tests: parseInt($td.eq(4).text()),
+            pending_tests: parseInt($td.eq(6).text()),
           };
 
           let updated_data = checkDataUpdate(temp_result, 'or', state);
