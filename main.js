@@ -62,6 +62,33 @@ let managers = {
         .catch(error => console.log(`Failed to get ri cases: ${error}`));
     },
   },
+  ca: {
+    config: {
+      url: 'https://www.cdph.ca.gov/programs/cid/dcdc/pages/immunization/ncov2019.aspx',
+    },
+    updater: config => {
+      axios.get(config.url)
+        .then(response => {
+          const $ = cheerio.load(response.data.toString());
+          let summary = $('.NewsItemContent').eq(5);
+
+          let temp_result = {
+            positive_cases: parseInt(summary.find('p').eq(3).text().split(' ')[0]),
+          };
+          let updated_data = checkDataUpdate(temp_result, 'ca', state);
+          temp_result['updated_data'] = updated_data;
+
+          if (discord_post && updated_data) {
+            axios.post(process.env.DISCORD_WEBHOOK_URL, {
+              content: `New CA Coronavirus Data: \nPositive Cases: ${temp_result.positive_cases}`
+            });
+          }
+
+          storeState('ca', temp_result);
+        })
+        .catch(error => console.log(`Failed to get ca cases: ${error}`));
+    },
+  },
   fed: {
     config: {
       url: 'https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html',
@@ -225,6 +252,7 @@ for (let [, manager] of Object.entries(managers)) {
 app.get('/', (req, res) => res.send('Hello World!'));
 app.get('/cases/all', (req, res) => res.send(result));
 app.get('/cases/mn', (req, res) => res.send(result.mn));
+app.get('/cases/ca', (req, res) => res.send(result.ca));
 app.get('/cases/ny', (req, res) => res.send(result.ny));
 app.get('/cases/or', (req, res) => res.send(result.or));
 app.get('/cases/ri', (req, res) => res.send(result.ri));
@@ -234,13 +262,17 @@ app.get('/cases/fed', (req, res) => res.send(result.fed));
 client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`));
 
 client.on('message', msg => {
-  if (msg.content === '!mn') {
-    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nTotal Tested: ${state.mn.total_cases}`);
-    return;
+  if (msg.content === '!ca') {
+    msg.reply(`CA Coronavirus Data: \nPositive Cases: ${state.ca.positive_cases}`)
   }
 
   if (msg.content === '!fed') {
     msg.reply(`Federal Coronavirus Data: \nPositive: ${state.fed.positive_cases}\nDeaths: ${state.fed.deaths}`);
+    return;
+  }
+
+  if (msg.content === '!mn') {
+    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nTotal Tested: ${state.mn.total_cases}`);
     return;
   }
 
@@ -249,15 +281,16 @@ client.on('message', msg => {
     return;
   }
 
+  if (msg.content === '!or') {
+    msg.reply(`Oregon Coronavirus Data: \nPositive: ${state.or.positive_cases}\nNegative tests: ${state.or.negative_tests}\nPending Tests: ${state.or.pending_tests}\n`)
+  }
+
   if (msg.content === '!ri') {
     msg.reply(`Rhode Island Coronavirus Data: \nPositive: ${state.ri.positive_cases}\nNegative tests: ${state.ri.negative_tests}\nPending Tests: ${state.ri.pending_tests}\nUnder Quarantine: ${state.ri.quarantine}`)
     return;
   }
-
-  if (msg.content === '!or') {
-    msg.reply(`Oregon Coronavirus Data: \nPositive: ${state.or.positive_cases}\nNegative tests: ${state.or.negative_tests}\nPending Tests: ${state.or.pending_tests}\n`)
-  }
 });
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
