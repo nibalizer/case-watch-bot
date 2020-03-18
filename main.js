@@ -155,9 +155,14 @@ let managers = {
           const $ = cheerio.load(response.data.toString());
 
           let $td = $('td');
+          for (var i = 0; i < $td.length; i++){
+              if ($('td').eq(i).text() == "New York City") {
+                  var nyc_cases = parseInt($('td').eq(i+1).text().replace(",",""));
+                  break;
+              }
+          }
           let temp_result = {
-            upstate_cases: parseInt($('td').eq(-5).text().replace(",","")),
-            nyc_cases: parseInt($('td').eq(-3).text().replace(",","")),
+            nyc_cases: nyc_cases,
             total_cases: parseInt($('td').eq(-1).text().replace(",","")),
           };
           let updated_data = checkDataUpdate(temp_result, 'ny', state);
@@ -165,7 +170,7 @@ let managers = {
 
           if (discord_post && updated_data) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
-              content: `New York Coronavirus Data: \nNYC Positive Cases: ${temp_result.nyc_cases}\nNon-NYC Positive Cases: ${temp_result.upstate_cases}\nTotal Positive Cases: ${temp_result.total_cases}`
+              content: `New York Coronavirus Data: \nNYC Positive Cases: ${temp_result.nyc_cases}\nTotal Positive Cases: ${temp_result.total_cases}`
             });
           }
 
@@ -310,7 +315,7 @@ client.on('message', msg => {
   }
 
   if (msg.content === '!ny') {
-    msg.reply(`New York Coronavirus Data: \nNYC Positive: ${state.ny.nyc_cases}\nNon-NYC Positive: ${state.ny.upstate_cases}\nTotal Positive: ${state.ny.total_cases}`)
+    msg.reply(`New York Coronavirus Data: \nNYC Positive: ${state.ny.nyc_cases}\nTotal Positive: ${state.ny.total_cases}`)
     return;
   }
 
