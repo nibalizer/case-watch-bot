@@ -96,8 +96,8 @@ let managers = {
             var body = $('#body');
 
             temp_result = {
-              positive_cases: body.find('li').eq(1).text().split(' ')[0],
-              total_cases: body.find('li').eq(0).text().split(' ')[0],
+              positive_cases: parseFloat(body.find('li').eq(1).text().split(' ').slice(-1)[0]),
+              total_cases: parseFloat(body.find('li').eq(0).text().split(' ').slice(-1)[0]),
             };
             updated_data = checkDataUpdate(temp_result, "mn", state);
             temp_result["updated_data"] = updated_data;
