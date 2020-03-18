@@ -20,6 +20,7 @@ if (fs.existsSync(`~${__dirname}/.env`)) {
 }
 
 const mn_url = process.env.SITUATION_URL;
+const refresh_miliseconds = process.env.REFRESH;
 
 let discord_post = process.env.DISCORD_POST === 'true';
 
@@ -214,9 +215,10 @@ loadState();
 
 for (let [, manager] of Object.entries(managers)) {
   if (typeof manager.updater != 'undefined') {
+    manager.updater(manager.config);
     setInterval(() => {
       manager.updater(manager.config);
-    }, 3000);
+    }, refresh_miliseconds);
   }
 }
 
