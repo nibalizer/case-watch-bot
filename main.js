@@ -9,7 +9,7 @@ const client = new Discord.Client();
 
 const port = 3000;
 const mn_url = process.env.SITUATION_URL;
-const ny_url = "https://www.health.ny.gov/diseases/communicable/coronavirus/";
+const ny_url = "https://coronavirus.health.ny.gov/county-county-breakdown-positive-cases";
 const fed_url = "https://www.cdc.gov/coronavirus/2019-ncov/cases-in-us.html";
 
 let discord_post = false;
