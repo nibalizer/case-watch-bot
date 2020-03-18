@@ -73,8 +73,8 @@ let managers = {
           let summary = $('.2019coronavirus-summary');
 
           let temp_result = {
-            positive_cases: parseFloat(summary.find('li').eq(0).text().split(' ')[2].replace(",","")),
-            deaths: parseFloat(summary.find('li').eq(1).text().split(' ')[2]),
+            positive_cases: parseInt(summary.find('li').eq(0).text().split(' ')[2].replace(",","")),
+            deaths: parseInt(summary.find('li').eq(1).text().split(' ')[2]),
           };
           let updated_data = checkDataUpdate(temp_result, 'fed', state);
           temp_result['updated_data'] = updated_data;
@@ -101,8 +101,8 @@ let managers = {
           let body = $('#body');
 
           let temp_result = {
-            positive_cases: parseFloat(body.find('li').eq(1).text().split(' ').slice(-1)[0]),
-            total_cases: parseFloat(body.find('li').eq(0).text().split(' ').slice(-1)[0]),
+            positive_cases: parseInt(body.find('li').eq(1).text().split(' ').slice(-1)[0]),
+            total_cases: parseInt(body.find('li').eq(0).text().split(' ').slice(-1)[0]),
           };
           let updated_data = checkDataUpdate(temp_result, 'mn', state);
           temp_result['updated_data'] = updated_data;
@@ -129,9 +129,9 @@ let managers = {
 
           let $td = $('td');
           let temp_result = {
-            upstate_cases: parseFloat($('td').eq(-5).text().replace(",","")),
-            nyc_cases: parseFloat($('td').eq(-3).text().replace(",","")),
-            total_cases: parseFloat($('td').eq(-1).text().replace(",","")),
+            upstate_cases: parseInt($('td').eq(-5).text().replace(",","")),
+            nyc_cases: parseInt($('td').eq(-3).text().replace(",","")),
+            total_cases: parseInt($('td').eq(-1).text().replace(",","")),
           };
           let updated_data = checkDataUpdate(temp_result, 'ny', state);
           temp_result['updated_data'] = updated_data;
