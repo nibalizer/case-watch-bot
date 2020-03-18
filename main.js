@@ -187,13 +187,13 @@ let managers = {
       axios.get(config.url)
         .then(response => {
           const $ = cheerio.load(response.data.toString());
-          let summary = $('.ExternalClass23E56795FBF0468C9F856CD297450134');
+          let summary = $('.card');
           let $td = summary.find('td');
 
           let temp_result = {
-            positive_cases: parseInt($td.eq(2).text()),
-            negative_tests: parseInt($td.eq(4).text()),
-            pending_tests: parseInt($td.eq(6).text()),
+            positive_cases: parseInt($td.eq(1).text()),
+            negative_tests: parseInt($td.eq(3).text().replace(",","")),
+            pending_tests: parseInt($td.eq(5).text()),
           };
 
           let updated_data = checkDataUpdate(temp_result, 'or', state);
