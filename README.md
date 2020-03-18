@@ -16,6 +16,8 @@ We're looking for help getting more states parsed by the script! Pull requests w
 ## States supported
 
 * MN
+* TX
+* CA
 * NY
 * RI
 * Federal
