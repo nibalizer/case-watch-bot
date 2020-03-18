@@ -362,9 +362,11 @@ if (argv.serve) {
     process.exit(1)
   } else {
     var picker = String(argv.test).toLowerCase()
-    console.log(picker)
-
-    data[picker].updater()
+    console.log("Testing for State: ", picker)
+    discord_post = false;
+    loadState();
+    config = managers[picker].config
+    managers[picker].updater(config)
   }
 } else {
   console.log("You must specify either --serve or --test=ST (state shortcode)")
