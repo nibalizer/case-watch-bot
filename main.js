@@ -74,7 +74,7 @@ let managers = {
           let summary = $('.NewsItemContent').eq(5);
 
           let temp_result = {
-            positive_cases: parseInt(summary.find('p').eq(3).text().split(' ')[0]),
+            positive_cases: parseInt(summary.find('p').eq(0).text().split(' ')[0]),
           };
           let updated_data = checkDataUpdate(temp_result, 'ca', state);
           temp_result['updated_data'] = updated_data;
