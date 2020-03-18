@@ -1,4 +1,6 @@
+#!/usr/bin/env node
 require('dotenv').config();
+const argv = require('yargs').argv
 const cheerio = require('cheerio');
 const axios = require('axios');
 const fs = require('fs');
@@ -10,6 +12,9 @@ const https = require('https');
 
 const port = 3000;
 
+var all_states = [ "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY" ]
+
+
 if (fs.existsSync(`~${__dirname}/state.json`)) {
   console.log('Please copy the example.state.json to state.json');
   process.exit(1);
@@ -20,15 +25,9 @@ if (fs.existsSync(`~${__dirname}/.env`)) {
   process.exit(1);
 }
 
-const mn_url = process.env.SITUATION_URL;
 const refresh_miliseconds = process.env.REFRESH;
 
 let discord_post = process.env.DISCORD_POST === 'true';
-
-if (typeof process.env.SITUATION_URL == 'undefined') {
-  console.log('Please set env var SITUATION_URL');
-  process.exit(1);
-}
 
 let state = {};
 
@@ -120,7 +119,7 @@ let managers = {
   },
   mn: {
     config: {
-      url: mn_url,
+      url: "https://www.health.state.mn.us/diseases/coronavirus/situation.html"
     },
     updater: config => {
       axios.get(config.url)
@@ -262,6 +261,7 @@ const loadState = () => {
   });
 };
 
+
 const storeState = (state_name, val) => {
   state[state_name] = val;
   console.log(`Set state ${state_name} to ${JSON.stringify(val)}`);
@@ -272,16 +272,6 @@ const storeState = (state_name, val) => {
   });
 };
 
-loadState();
-
-for (let [, manager] of Object.entries(managers)) {
-  if (typeof manager.updater != 'undefined') {
-    manager.updater(manager.config);
-    setInterval(() => {
-      manager.updater(manager.config);
-    }, refresh_miliseconds);
-  }
-}
 
 app.get('/', (req, res) => res.send('Hello World!'));
 app.get('/cases/all', (req, res) => res.send(result));
@@ -293,8 +283,6 @@ app.get('/cases/ri', (req, res) => res.send(result.ri));
 app.get('/cases/tx', (req, res) => res.send(result.tx));
 app.get('/cases/fed', (req, res) => res.send(result.fed));
 
-//discord bot
-client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`));
 
 const send_help = (msg) => {
   var supported_states = Object.keys(state);
@@ -340,8 +328,46 @@ client.on('message', msg => {
   }
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
-if (discord_post) {
-  client.login(process.env.DISCORD_TOKEN);
+if (argv.serve) {
+  console.log("Starting Up Covid-19 Case Watch App")
+  console.log("Discord: ", discord_post)
+  console.log("Webscrping: Enabled")
+  console.log("Webscrping refresh rate:", refresh_miliseconds / 1000, "seconds")
+  console.log("HTTP Server: Enabled")
+  console.log("HTTP Port: ", port)
+  loadState();
+
+  for (let [, manager] of Object.entries(managers)) {
+    if (typeof manager.updater != 'undefined') {
+      manager.updater(manager.config);
+      setInterval(() => {
+        manager.updater(manager.config);
+      }, refresh_miliseconds);
+    }
+  }
+  app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+
+  //discord bot
+  client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`));
+
+  if (discord_post) {
+    client.login(process.env.DISCORD_TOKEN);
+  }
+
+} else if (argv.test) {
+  //console.log(data[String(argv.test)])
+  if (argv.test === true || ! all_states.includes(argv.test.toUpperCase())) {
+    console.log("You must specify a state to test")
+    process.exit(1)
+  } else {
+    var picker = String(argv.test).toLowerCase()
+    console.log(picker)
+
+    data[picker].updater()
+  }
+} else {
+  console.log("You must specify either --serve or --test=ST (state shortcode)")
+  process.exit(1)
 }
+
