@@ -6,6 +6,7 @@ const express = require('express');
 const app = express();
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const https = require('https');
 
 const port = 3000;
 
@@ -205,6 +206,39 @@ let managers = {
         .catch(error => console.log(`Failed to get or cases: ${error}`));
     },
   },
+  tx: {
+    config: {
+      url: 'https://www.dshs.state.tx.us/news/updates.shtm#coronavirus',
+    },
+    updater: config => {
+      const agent = new https.Agent({
+        // yeah I know :(
+        rejectUnauthorized: false
+      });
+      axios.get(config.url, { httpsAgent: agent})
+        .then(response => {
+          const $ = cheerio.load(response.data.toString());
+
+          let temp_result = {
+            positive_cases: parseInt($('td').eq(3).text()),
+            total_tests: parseInt($('td').eq(0).text().replace(",","")),
+            deaths: parseInt($('td').eq(4).text()),
+          };
+
+          let updated_data = checkDataUpdate(temp_result, 'tx', state);
+          temp_result['updated_data'] = updated_data;
+
+          if (discord_post && updated_data) {
+            axios.post(process.env.DISCORD_WEBHOOK_URL, {
+              content: `New Texas Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nTotal tests: ${temp_result.total_tests}\nDeaths ${temp_result.deaths}\n`
+            });
+          }
+
+          storeState('tx', temp_result);
+        })
+        .catch(error => console.log(`Failed to get tx cases: ${error}`));
+    },
+  },
 };
 
 const checkDataUpdate = (cases, loc, state) => {
@@ -256,6 +290,7 @@ app.get('/cases/ca', (req, res) => res.send(result.ca));
 app.get('/cases/ny', (req, res) => res.send(result.ny));
 app.get('/cases/or', (req, res) => res.send(result.or));
 app.get('/cases/ri', (req, res) => res.send(result.ri));
+app.get('/cases/tx', (req, res) => res.send(result.tx));
 app.get('/cases/fed', (req, res) => res.send(result.fed));
 
 //discord bot
@@ -299,8 +334,11 @@ client.on('message', msg => {
     msg.reply(`Rhode Island Coronavirus Data: \nPositive: ${state.ri.positive_cases}\nNegative tests: ${state.ri.negative_tests}\nPending Tests: ${state.ri.pending_tests}\nUnder Quarantine: ${state.ri.quarantine}`)
     return;
   }
+  if (msg.content === '!tx') {
+    msg.reply(`Texas Coronavirus Data: \nPositive: ${state.tx.positive_cases}\nTotal tests: ${state.tx.total_tests}\nDeaths ${state.tx.deaths}\n`)
+    return;
+  }
 });
-
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
