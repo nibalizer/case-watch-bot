@@ -123,9 +123,9 @@ let managers = {
             const $ = cheerio.load(response.data.toString());
 
             temp_result = {
-              upstate_cases: parseFloat($('td').eq(-5).text()),
-              nyc_cases: parseFloat($('td').eq(-3).text()),
-              total_cases: parseFloat($('td').eq(-1).text()),
+              upstate_cases: parseFloat($('td').eq(-5).text().replace(",","")),
+              nyc_cases: parseFloat($('td').eq(-3).text().replace(",","")),
+              total_cases: parseFloat($('td').eq(-1).text().replace(",","")),
             };
             updated_data = checkDataUpdate(temp_result, "ny", state);
             temp_result["updated_data"] = updated_data;
