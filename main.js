@@ -261,7 +261,17 @@ app.get('/cases/fed', (req, res) => res.send(result.fed));
 //discord bot
 client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`));
 
+const send_help = (msg) => {
+  var supported_states = Object.keys(state);
+  msg.reply(`Supported states are: ${supported_states.join(', ')}`)
+  msg.reply(`Source code is available here: https://github.com/nibalizer/case-watch-bot`)
+};
+
 client.on('message', msg => {
+  if (msg.content === '!help') {
+    send_help(msg)
+  }
+
   if (msg.content === '!ca') {
     msg.reply(`CA Coronavirus Data: \nPositive Cases: ${state.ca.positive_cases}`)
   }
