@@ -70,7 +70,8 @@ let managers = {
       axios.get(config.url)
         .then(response => {
           const $ = cheerio.load(response.data.toString());
-          let summary = $('.NewsItemContent').eq(5);
+          let summary = $('.NewsItemContent').eq(4);
+          console.log(summary.html())
 
           let temp_result = {
             positive_cases: parseInt(summary.find('p').eq(0).text().split(' ')[0]),
