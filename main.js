@@ -290,9 +290,12 @@ app.get('/cases/fed', (req, res) => res.send(result.fed));
 
 
 const send_help = (msg) => {
+  var src_url = "https://github.com/nibalizer/case-watch-bot"
+  var invite_url = "https://discordapp.com/api/oauth2/authorize?client_id=686649091069050996&permissions=93184&scope=bot"
   var supported_states = Object.keys(state);
   msg.reply(`Supported states are: ${supported_states.join(', ')}`)
-  msg.reply(`Source code is available here: https://github.com/nibalizer/case-watch-bot`)
+  msg.reply(`Source code is available here: ${src_url}`)
+  msg.reply(`Add bot to another server with this invite link: ${invite_url}`)
 };
 
 client.on('message', msg => {
