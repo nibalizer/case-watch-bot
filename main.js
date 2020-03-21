@@ -94,10 +94,12 @@ let managers = {
             positive_cases: parseInt(positive_cases),
             deaths: parseInt(deaths),
           }
+          let updated_data = checkDataUpdate(temp_result, 'ca', state);
+          temp_result['updated_data'] = updated_data;
 
           if (discord_post && updated_data) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
-              content: `New CA Coronavirus Data: \nPositive Cases: ${temp_result.positive_cases}`
+                content: `New CA Coronavirus Data: \nPositive Cases: ${temp_result.positive_cases}\nDeaths: ${temp_result.deaths}`
             });
           }
 
@@ -321,7 +323,7 @@ client.on('message', msg => {
   }
 
   if (msg.content === '!ca') {
-    msg.reply(`CA Coronavirus Data: \nPositive Cases: ${state.ca.positive_cases}`)
+    msg.reply(`CA Coronavirus Data: \nPositive Cases: ${state.ca.positive_cases}\nDeaths: ${state.ca.deaths}`)
   }
 
   if (msg.content === '!fed') {
