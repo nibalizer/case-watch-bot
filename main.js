@@ -144,18 +144,22 @@ let managers = {
       axios.get(config.url)
         .then(response => {
           const $ = cheerio.load(response.data.toString());
+          if (debug) {
+              console.log(`Data from ${managers.mn.config.url}`);
+          }
           let body = $('#body');
 
           let temp_result = {
-            positive_cases: parseInt(body.find('li').eq(1).text().split(' ').slice(-1)[0]),
-            total_cases: parseInt(body.find('li').eq(0).text().split(' ').slice(-1)[0]),
+            positive_cases: parseInt(body.find('li').eq(0).text().split(' ').slice(-1)[0]),
+            deaths: parseInt(body.find('li').eq(1).text().split(' ').slice(-1)[0]),
+            total_cases: parseInt(body.find('li').eq(2).text().split(' ').slice(-1)[0]),
           };
           let updated_data = checkDataUpdate(temp_result, 'mn', state);
           temp_result['updated_data'] = updated_data;
 
           if (discord_post && updated_data) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
-              content: `New Minnesota Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nTotal Tested: ${temp_result.total_cases}`
+                content: `New Minnesota Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nDeaths: ${temp_result.deaths}\nTotal Tested: ${temp_result.total_cases}`
             });
           }
 
@@ -332,7 +336,7 @@ client.on('message', msg => {
   }
 
   if (msg.content === '!mn') {
-    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nTotal Tested: ${state.mn.total_cases}`);
+    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nDeaths: ${state.mn.deaths}\nTotal Tested: ${state.mn.total_cases}`);
     return;
   }
 
