@@ -14,6 +14,7 @@ const port = 3000;
 
 var all_states = [ "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY" ]
 
+var debug = false;
 
 if (fs.existsSync(`~${__dirname}/state.json`)) {
   console.log('Please copy the example.state.json to state.json');
@@ -69,15 +70,30 @@ let managers = {
     updater: config => {
       axios.get(config.url)
         .then(response => {
+          if (debug) {
+              console.log(`Data from ${managers.ca.config.url}`);
+          }
           const $ = cheerio.load(response.data.toString());
-          let summary = $('.NewsItemContent').eq(4);
-          console.log(summary.html())
+          let summary = $('.NewsItemContent').eq(2);
+          if (debug) {
+              console.log(summary.html())
+          }
+          var deaths;
+          var positive_cases;
+          let summary_split = summary.html().split(' ');
+          for (var i = 0; i < summary_split.length; i++){
+            if (summary_split[i].includes('deaths')) {
+              deaths = summary_split[i].split('\xa0')[0];
+            }
+            if (summary_split[i].includes('positive')) {
+              positive_cases = summary_split[i].split('\xa0')[0].replace(",","");
+            }
+          }
 
           let temp_result = {
-            positive_cases: parseInt(summary.find('p').eq(0).text().split(' ')[0]),
-          };
-          let updated_data = checkDataUpdate(temp_result, 'ca', state);
-          temp_result['updated_data'] = updated_data;
+            positive_cases: parseInt(positive_cases),
+            deaths: parseInt(deaths),
+          }
 
           if (discord_post && updated_data) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
@@ -370,6 +386,7 @@ if (argv.serve) {
     console.log("You must specify a state to test")
     process.exit(1)
   } else {
+    debug = true;
     var picker = String(argv.test).toLowerCase()
     console.log("Testing for State: ", picker)
     discord_post = false;
