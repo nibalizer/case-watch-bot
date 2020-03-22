@@ -216,7 +216,7 @@ let managers = {
           let temp_result = {
             positive_cases: parseInt($td.eq(1).text()),
             negative_tests: parseInt($td.eq(3).text().replace(",","")),
-            pending_tests: parseInt($td.eq(5).text()),
+            total_tests: parseInt($td.eq(5).text().replace(",","")),
           };
 
           let updated_data = checkDataUpdate(temp_result, 'or', state);
@@ -224,7 +224,7 @@ let managers = {
 
           if (discord_post && updated_data) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
-              content: `New Oregon Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nPending Tests: ${temp_result.pending_tests}\n`
+              content: `New Oregon Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nTotal Tests: ${temp_result.total_tests}\n`
             });
           }
 
@@ -358,7 +358,7 @@ client.on('message', msg => {
   }
 
   if (msg.content === '!or') {
-    msg.reply(`Oregon Coronavirus Data: \nPositive: ${state.or.positive_cases}\nNegative tests: ${state.or.negative_tests}\nPending Tests: ${state.or.pending_tests}\n`)
+    msg.reply(`Oregon Coronavirus Data: \nPositive: ${state.or.positive_cases}\nNegative tests: ${state.or.negative_tests}\nTotal Tests: ${state.or.total_tests}\n`)
   }
 
   if (msg.content === '!ri') {
