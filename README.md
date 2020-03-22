@@ -11,7 +11,7 @@ This bot watches a few different department of health websites for changes. When
 
 ## Add Bot to your server
 
-To add the bot to your server navigate to this [link]() and follow the instructions.
+To add the bot to your server navigate to this [link](https://discordapp.com/api/oauth2/authorize?client_id=686649091069050996&permissions=93184&scope=bot>) and follow the instructions.
 
 ## Help wanted
 
