@@ -312,18 +312,30 @@ app.get('/cases/tx', (req, res) => res.send(result.tx));
 app.get('/cases/fed', (req, res) => res.send(result.fed));
 
 
-const send_help = (msg) => {
+const help = (msg) => {
   var src_url = "https://github.com/nibalizer/case-watch-bot"
-  var invite_url = "https://discordapp.com/api/oauth2/authorize?client_id=686649091069050996&permissions=93184&scope=bot"
+  var invite_url = "<https://discordapp.com/api/oauth2/authorize?client_id=686649091069050996&permissions=93184&scope=bot>"
   var supported_states = Object.keys(state);
-  msg.reply(`Supported states are: ${supported_states.join(', ')}`)
-  msg.reply(`Source code is available here: ${src_url}`)
-  msg.reply(`Add bot to another server with this invite link: ${invite_url}`)
+  msg.reply(`Supported states are: ${supported_states.join(', ')}\n` + 
+  `Source code is available here: ${src_url}\n` +
+  `Add bot to another server with this invite link: ${invite_url}`)
 };
+
+const sources = (msg) => {
+  var supported_states = Object.keys(managers);
+  var states_urls = ""
+  for (var i = 0; i<supported_states.length; i++ ) {
+      states_urls += "\n" + supported_states[i] + ": <" + managers[supported_states[i]].config.url  + ">"
+  }
+  msg.reply("Upstream Data Sources for each state:" + states_urls);
+}
 
 client.on('message', msg => {
   if (msg.content === '!help') {
-    send_help(msg)
+    help(msg)
+  }
+  if (['!src', '!sources', '!source'].includes(msg.content)) {
+    sources(msg)
   }
 
   if (msg.content === '!ca') {
