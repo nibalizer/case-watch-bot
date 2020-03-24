@@ -151,7 +151,8 @@ let managers = {
 
           let temp_result = {
             positive_cases: parseInt(body.find('li').eq(0).text().split(' ').slice(-1)[0]),
-            deaths: parseInt(body.find('li').eq(1).text().split(' ').slice(-1)[0]),
+            deaths: parseInt(body.find('li').eq(2).text().split(' ').slice(-1)[0]),
+            total_tests: parseInt(body.find('li').eq(1).text().split(' ').slice(-1)[0]),
           };
           let updated_data = checkDataUpdate(temp_result, 'mn', state);
           temp_result['updated_data'] = updated_data;
@@ -347,7 +348,7 @@ client.on('message', msg => {
   }
 
   if (msg.content === '!mn') {
-    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nDeaths: ${state.mn.deaths}`);
+    msg.reply(`Minnesota Coronavirus Data: \nPositive: ${state.mn.positive_cases}\nDeaths: ${state.mn.deaths}\nTotal Tests: ${state.mn.total_tests}`);
     return;
   }
 
