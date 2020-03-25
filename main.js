@@ -151,15 +151,15 @@ let managers = {
 
           let temp_result = {
             positive_cases: parseInt(body.find('li').eq(0).text().split(' ').slice(-1)[0]),
-            deaths: parseInt(body.find('li').eq(2).text().split(' ').slice(-1)[0]),
-            total_tests: parseInt(body.find('li').eq(1).text().split(' ').slice(-1)[0]),
+            deaths: parseInt(body.find('li').eq(3).text().split(' ').slice(-1)[0]),
+            total_tests: parseInt(body.find('li').eq(1).text().split(' ').slice(-1)[0]) + parseInt(body.find('li').eq(2).text().split(' ').slice(-1)[0]),
           };
           let updated_data = checkDataUpdate(temp_result, 'mn', state);
           temp_result['updated_data'] = updated_data;
 
           if (discord_post && updated_data) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
-                content: `New Minnesota Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nDeaths: ${temp_result.deaths}`
+                content: `New Minnesota Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nDeaths: ${temp_result.deaths}\nTotal Tests: ${temp_result.total_tests}`
             });
           }
 
