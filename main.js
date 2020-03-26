@@ -144,15 +144,19 @@ let managers = {
       axios.get(config.url)
         .then(response => {
           const $ = cheerio.load(response.data.toString());
+          let body = $('#body');
+          // clean up html a bit for easier processing
+          body.find('li').eq(0).find('ul').remove()
+          body.find('li').eq(1).find('ul').remove()
           if (debug) {
               console.log(`Data from ${managers.mn.config.url}`);
+              console.log(body.find('li').eq(2).text().split(' '))
           }
-          let body = $('#body');
 
           let temp_result = {
-            positive_cases: parseInt(body.find('li').eq(0).text().split(' ').slice(-1)[0]),
-            deaths: parseInt(body.find('li').eq(3).text().split(' ').slice(-1)[0]),
-            total_tests: parseInt(body.find('li').eq(1).text().split(' ').slice(-1)[0]) + parseInt(body.find('li').eq(2).text().split(' ').slice(-1)[0]),
+            positive_cases: parseInt(body.find('li').eq(0).text().split(' ')[2]),
+            deaths: parseInt(body.find('li').eq(2).text().split(' ')[1]),
+            total_tests: parseInt(body.find('li').eq(1).text().split('\n')[1].replace(",","")), 
           };
           let updated_data = checkDataUpdate(temp_result, 'mn', state);
           temp_result['updated_data'] = updated_data;
