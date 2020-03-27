@@ -12,7 +12,7 @@ const https = require('https');
 
 const port = 3000;
 
-var all_states = [ "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY" ]
+var all_states = [ "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", "FED"]
 
 var debug = false;
 
@@ -120,7 +120,7 @@ let managers = {
 
           let temp_result = {
             positive_cases: parseInt(summary.find('li').eq(0).text().split(' ')[2].replace(",","")),
-            deaths: parseInt(summary.find('li').eq(1).text().split(' ')[2]),
+            deaths: parseInt(summary.find('li').eq(1).text().split(' ')[2].replace(",","")),
           };
           let updated_data = checkDataUpdate(temp_result, 'fed', state);
           temp_result['updated_data'] = updated_data;
