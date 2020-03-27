@@ -151,12 +151,13 @@ let managers = {
           if (debug) {
               console.log(`Data from ${managers.mn.config.url}`);
               console.log(body.find('li').eq(2).text().split(' '))
+              console.log(body.find('li').eq(1).text().split('\n')[0].split(' ').slice(-1)[0].replace(",","")) 
           }
 
           let temp_result = {
             positive_cases: parseInt(body.find('li').eq(0).text().split(' ')[2]),
             deaths: parseInt(body.find('li').eq(2).text().split(' ')[1]),
-            total_tests: parseInt(body.find('li').eq(1).text().split('\n')[1].replace(",","")), 
+            total_tests: parseInt(body.find('li').eq(1).text().split('\n')[0].split(' ').slice(-1)[0].replace(",","")), 
           };
           let updated_data = checkDataUpdate(temp_result, 'mn', state);
           temp_result['updated_data'] = updated_data;
