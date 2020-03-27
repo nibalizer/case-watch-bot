@@ -74,7 +74,7 @@ let managers = {
               console.log(`Data from ${managers.ca.config.url}`);
           }
           const $ = cheerio.load(response.data.toString());
-          let summary = $('.NewsItemContent').eq(2);
+          let summary = $('.ms-rtestate-field').eq(1).find('p').eq(1);
           if (debug) {
               console.log(summary.html())
           }
@@ -86,6 +86,8 @@ let managers = {
               deaths = summary_split[i].split('\xa0')[0];
             }
             if (summary_split[i].includes('positive')) {
+              console.log(summary_split[i]);
+              console.log(summary_split[i-1]);
               positive_cases = summary_split[i].split('\xa0')[0].replace(",","");
             }
           }
