@@ -252,6 +252,9 @@ let managers = {
       axios.get(config.url, { httpsAgent: agent})
         .then(response => {
           const $ = cheerio.load(response.data.toString());
+          if (debug) {
+              console.log(`Data from ${managers.tx.config.url}`);
+          }
 
           let temp_result = {
             positive_cases: parseInt($('td').eq(3).text()),
@@ -262,7 +265,9 @@ let managers = {
           let updated_data = checkDataUpdate(temp_result, 'tx', state);
           temp_result['updated_data'] = updated_data;
 
-          if (discord_post && updated_data) {
+          //disable texas 
+          //if (discord_post && updated_data ) {
+          if (false) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
               content: `New Texas Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nTotal tests: ${temp_result.total_tests}\nDeaths ${temp_result.deaths}\n`
             });
@@ -373,7 +378,9 @@ client.on('message', msg => {
     return;
   }
   if (msg.content === '!tx') {
-    msg.reply(`Texas Coronavirus Data: \nPositive: ${state.tx.positive_cases}\nTotal tests: ${state.tx.total_tests}\nDeaths ${state.tx.deaths}\n`)
+    //temporariliy disable texas
+    //msg.reply(`Texas Coronavirus Data: \nPositive: ${state.tx.positive_cases}\nTotal tests: ${state.tx.total_tests}\nDeaths ${state.tx.deaths}\n`)
+    msg.reply(`Texas has a live dashboard here: <https://txdshs.maps.arcgis.com/apps/opsdashboard/index.html#/ed483ecd702b4298ab01e8b9cafc8b83>`)
     return;
   }
 });
