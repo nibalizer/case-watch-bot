@@ -44,17 +44,17 @@ let managers = {
           let summary = JSON.parse(payload);
 
           let temp_result = {
-            positive_cases: parseInt(summary.table.rows[0].c[1].v),
-            negative_tests: parseInt(summary.table.rows[1].c[1].v),
-            pending_tests: parseInt(summary.table.rows[2].c[1].v),
-            quarantine: parseInt(summary.table.rows[3].c[1].v),
+            positive_cases: parseInt(summary.table.rows[0].c[1].v.replace(",","")),
+            negative_tests: parseInt(summary.table.rows[1].c[1].v.replace(",","")),
+            hospitalized: parseInt(summary.table.rows[3].c[1].v),
+            deaths: parseInt(summary.table.rows[3].c[1].v),
           };
           let updated_data = checkDataUpdate(temp_result, 'ri', state);
           temp_result['updated_data'] = updated_data;
 
           if (discord_post && updated_data) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
-              content: `New Rhode Island Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nPending Tests: ${temp_result.pending_tests}\nUnder Quarantine: ${temp_result.quarantine}`,
+              content: `New Rhode Island Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nNegative tests: ${temp_result.negative_tests}\nHospitalized: ${temp_result.hospitalized}\nDeaths: ${temp_result.deaths}`,
             });
           }
 
@@ -374,7 +374,7 @@ client.on('message', msg => {
   }
 
   if (msg.content === '!ri') {
-    msg.reply(`Rhode Island Coronavirus Data: \nPositive: ${state.ri.positive_cases}\nNegative tests: ${state.ri.negative_tests}\nPending Tests: ${state.ri.pending_tests}\nUnder Quarantine: ${state.ri.quarantine}`)
+    msg.reply(`Rhode Island Coronavirus Data: \nPositive: ${state.ri.positive_cases}\nNegative tests: ${state.ri.negative_tests}\nHospitalized: ${state.ri.hospitalized}\nDeaths: ${state.ri.deaths}`)
     return;
   }
   if (msg.content === '!tx') {
