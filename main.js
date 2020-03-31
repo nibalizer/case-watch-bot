@@ -32,6 +32,18 @@ let discord_post = process.env.DISCORD_POST === 'true';
 
 let state = {};
 
+const isNum = (num) => {
+    console.log(num)
+    result = true;
+    if (isNaN(num)) {
+        result = false
+    }
+    if (num === null || num === undefined){
+        result = false
+    }
+    return result
+}
+
 let managers = {
   ri: {
     config: {
@@ -70,11 +82,13 @@ let managers = {
     updater: config => {
       axios.get(config.url)
         .then(response => {
+          var state_name = 'ca'
           if (debug) {
               console.log(`Data from ${managers.ca.config.url}`);
           }
           const $ = cheerio.load(response.data.toString());
-          let summary = $('.ms-rtestate-field').eq(1).find('p').eq(1);
+          //let summary = $('.ms-rtestate-field').eq(1).find('p').eq(2);
+          let summary = $('.ms-rtestate-field').eq(3);
           if (debug) {
               console.log(summary.html())
           }
@@ -84,11 +98,15 @@ let managers = {
           for (var i = 0; i < summary_split.length; i++){
             if (summary_split[i].includes('deaths')) {
               deaths = summary_split[i].split('\xa0')[0];
+              break;
             }
+          }
+          for (var i = 0; i < summary_split.length; i++){
             if (summary_split[i].includes('positive')) {
               console.log(summary_split[i]);
               console.log(summary_split[i-1]);
               positive_cases = summary_split[i].split('\xa0')[0].replace(",","");
+              break;
             }
           }
 
@@ -99,7 +117,15 @@ let managers = {
           let updated_data = checkDataUpdate(temp_result, 'ca', state);
           temp_result['updated_data'] = updated_data;
 
-          if (discord_post && updated_data) {
+          if (isNum(temp_result.positive_cases) && isNum(temp_result.deaths)){
+              temp_result.valid_data = true
+          } else {
+              temp_result.valid_data = false
+              console.log("Parsing for ", state_name, " failed")
+          }
+          console.log(temp_result);
+
+          if (discord_post && updated_data && temp_result.valid_data) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
                 content: `New CA Coronavirus Data: \nPositive Cases: ${temp_result.positive_cases}\nDeaths: ${temp_result.deaths}`
             });
