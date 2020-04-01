@@ -171,6 +171,7 @@ let managers = {
     updater: config => {
       axios.get(config.url)
         .then(response => {
+          const state_name = 'mn'
           const $ = cheerio.load(response.data.toString());
           let body = $('#body');
           // clean up html a bit for easier processing
@@ -183,14 +184,21 @@ let managers = {
           }
 
           let temp_result = {
-            positive_cases: parseInt(body.find('li').eq(0).text().split(' ')[2]),
-            deaths: parseInt(body.find('li').eq(2).text().split(' ')[1]),
+            positive_cases: parseInt(body.find('li').eq(2).text().split(' ')[2]),
+            deaths: parseInt(body.find('li').eq(3).text().split(' ')[1]),
             total_tests: parseInt(body.find('li').eq(1).text().split('\n')[0].split(' ').slice(-1)[0].replace(",","")), 
           };
           let updated_data = checkDataUpdate(temp_result, 'mn', state);
           temp_result['updated_data'] = updated_data;
 
-          if (discord_post && updated_data) {
+          if (isNum(temp_result.positive_cases) && isNum(temp_result.deaths) && isNum(temp_result.deaths)){
+              temp_result.valid_data = true
+          } else {
+              temp_result.valid_data = false
+              console.log("Parsing for ", state_name, " failed")
+          }
+
+          if (discord_post && updated_data && temp_result.valid_data) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
                 content: `New Minnesota Coronavirus Data: \nPositive: ${temp_result.positive_cases}\nDeaths: ${temp_result.deaths}\nTotal Tests: ${temp_result.total_tests}`
             });
