@@ -97,8 +97,7 @@ let managers = {
           let summary_split = summary.html().split(' ');
           for (var i = 0; i < summary_split.length; i++){
             if (summary_split[i].includes('deaths')) {
-              deaths = summary_split[i].split('\xa0')[0];
-              break;
+              deaths = summary_split[i-1]
             }
           }
           for (var i = 0; i < summary_split.length; i++){
@@ -123,7 +122,6 @@ let managers = {
               temp_result.valid_data = false
               console.log("Parsing for ", state_name, " failed")
           }
-          console.log(temp_result);
 
           if (discord_post && updated_data && temp_result.valid_data) {
             axios.post(process.env.DISCORD_WEBHOOK_URL, {
