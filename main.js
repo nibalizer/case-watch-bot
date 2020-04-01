@@ -102,8 +102,6 @@ let managers = {
           }
           for (var i = 0; i < summary_split.length; i++){
             if (summary_split[i].includes('positive')) {
-              console.log(summary_split[i]);
-              console.log(summary_split[i-1]);
               positive_cases = summary_split[i].split('\xa0')[0].replace(",","");
               break;
             }
